@@ -1,0 +1,7 @@
+--14.  Найти список работников, у который юзернейм заканчивается на ‘1’, 
+--select * from staff
+--where username like '%1';
+
+--15.  Найти список работников в возрасте от 20 до 30 лет, у которых младший уровень должности.
+select * from staff
+where  position like 'J%' and age between 20 and 30 ; 
