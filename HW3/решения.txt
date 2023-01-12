@@ -57,7 +57,7 @@ where lastname like 'А__%';
 
 -- 9. В таблице оставить тех студентов, которые (проходят Х предмет и оценка выше 4) и тех студентов (которые учатся 7-10 классах и у них оценки ниже 3).
 delete from students
- where (mark > 4 and subject != 'Математика') or ((class between 1 and 6) and mark  > 3);
+ where not (subject != 'Математика' and mark < 4 or class between 7 and 10 and mark  > 3);
 
 -- 10. Удалить таблицу
 drop table students;
