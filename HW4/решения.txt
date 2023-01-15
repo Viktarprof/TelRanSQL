@@ -1,0 +1,35 @@
+
+-- Д/З 
+-- 25. Создать таблицу Jobs 
+--   Job_id целое число первичный ключ автоинкремент,  
+create table Jobs(
+Job_id integer primary key auto_increment
+);
+-- 26. Добавить поля title строка не null, description строка не null, salary целое число 
+alter table Jobs
+add column title varchar (128) not null,
+add column description varchar (128) not null,
+add column salary integer;
+
+-- 27. Переименовать поле title на job_title, description на job_description 
+alter table Jobs
+change title job_title varchar (128) not null,
+change description job_description varchar (128) not null;
+
+-- 28. Удалить поле salary 
+alter table Jobs
+drop  column salary;
+
+-- 29. Добавить поля min_salary тип numeric(2,1), max_salary целое число 
+alter table Jobs
+add column min_salary numeric(2,1),
+add column max_salary integer;
+
+-- 30. Изменить тип min_salary на целое число 
+alter table Jobs
+modify min_salary integer;
+
+-- 31. Удалить таблицу 
+drop table Jobs
+
+select * from Jobs;
