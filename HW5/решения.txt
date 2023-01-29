@@ -10,7 +10,7 @@ add rand numeric(2);
 set  sql_safe_updates = 0;
 
 update castomers
-set rand = RAND() * 10;
+set rand = RAND() * 9 + 1;
 
 
 -- 8. Используем таблицу employees
