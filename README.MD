@@ -5,3 +5,4 @@
 - [HW4](https://viktarprof.github.io/TelRanSQL/HW4/решения.txt)
 - [HW5](https://viktarprof.github.io/TelRanSQL/HW5/решения.txt)
 - [HW6](https://viktarprof.github.io/TelRanSQL/HW6/решения.txt)
+- [HW7](https://viktarprof.github.io/TelRanSQL/HW7/решения.txt)
