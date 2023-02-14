@@ -36,7 +36,7 @@ create table reactions(
                 video_id int (10) NOT NULL,
                 user_id int (10) NOT NULL,
 		datetimes datetime NOT NULL default current_timestamp,
-		type char (2) type in('like','dislike')
+		type char(7) check (type in('like','dislike')),
                 FOREIGN KEY (user_id) REFERENCES users (user_id),
                 FOREIGN KEY (video_id) REFERENCES Video (video_id) 
 --		FOREIGN KEY (user_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
