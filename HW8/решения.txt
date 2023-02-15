@@ -47,6 +47,8 @@ select * from donations;
 create database if not exists Online_chat;
 use Online_chat;
 
+
+
 create table if not exists users(
 		user_id int (10) auto_increment primary key,
 		username varchar (255) NOT NULL,
@@ -64,25 +66,29 @@ create table if not exists messages(
 		message_text text NOT NULL,
 		datetimes datetime NOT NULL default current_timestamp,
 		user_id int (10) NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users (user_id)
+		chats_id int (10) NOT NULL,
+		FOREIGN KEY (user_id) REFERENCES users (user_id),
+		FOREIGN KEY (chats_id) REFERENCES chats (chats_id)
 );
 -- drop table  messages;
 
 
 
-
+          
 create table if not exists chats(
 		chats_id int (10) auto_increment primary key,
-		datetimes datetime NOT NULL default current_timestamp,
+		messages_id int (10) NOT NULL,
 		user_id int (10) NOT NULL,
         	count_users int (10) NOT NULL,
-        	messages_id int (10) NOT NULL,
+		datetimes datetime NOT NULL default current_timestamp,
+        	online_user char(3) check (online_user in ('Yes', 'No')),
 		FOREIGN KEY (user_id) REFERENCES users (user_id),
 		FOREIGN KEY (messages_id) REFERENCES messages (messages_id) 
 );
--- drop table  chats;
+-- drop table  chats;  
 
-          
+
+
 create table reactions(
 		reaction_id int (10) auto_increment primary key,
 		user_id int (10) NOT NULL,
@@ -91,9 +97,8 @@ create table reactions(
 		type char(7) check (type in('like','dislike')),
 		FOREIGN KEY (user_id) REFERENCES users (user_id),
 		FOREIGN KEY (messages_id) REFERENCES messages (messages_id) 
-
 );
--- drop table  reactions;  
+-- drop table  reactions; 
 
 
 
