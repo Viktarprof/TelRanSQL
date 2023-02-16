@@ -7,13 +7,12 @@
 		-- - имя_юзера
 		-- - сумма донатов
 
-SELECT max(amount) AS max_sum, users.fullname
+SELECT sum(amount) AS total_sum, users.fullname
 FROM donations
 LEFT JOIN users ON donations.donator_id=users.user_id
 GROUP BY donations.donator_id
-ORDER BY max_sum DESC
+ORDER BY total_sum DESC
 LIMIT 1;
--- LIMIT 3;
 
 
 -- =============================================
@@ -24,12 +23,18 @@ LIMIT 1;
    -- - сумма_собранных_донатов
    
    
-SELECT max(amount) AS max_sum, users.fullname
-FROM donations
-LEFT JOIN users ON donations.donator_id=users.user_id
-GROUP BY donations.donator_id
-ORDER BY max_sum DESC
-LIMIT 3;
+select
+	users.fullname,
+    sum(donations.amount) as total_sum_donat
+	from donations
+	
+	left join streams on donations.stream_id = streams.stream_id
+	left join users on streams.user_id = users.user_id
+	
+	group by users.user_id
+	
+	ORDER BY total_sum_donat DESC
+	LIMIT 3;
 
 
 -- =============================================
@@ -46,8 +51,6 @@ select * from donations;
 
 create database if not exists Online_chat;
 use Online_chat;
-
-
 
 create table if not exists users(
 		user_id int (10) auto_increment primary key,
@@ -66,29 +69,30 @@ create table if not exists messages(
 		message_text text NOT NULL,
 		datetimes datetime NOT NULL default current_timestamp,
 		user_id int (10) NOT NULL,
-		chats_id int (10) NOT NULL,
-		FOREIGN KEY (user_id) REFERENCES users (user_id),
-		FOREIGN KEY (chats_id) REFERENCES chats (chats_id)
+        	recipient_id varchar (255) NOT NULL,
+        	is_removed_message bool default false,
+		FOREIGN KEY (user_id) REFERENCES users (user_id)
 );
 -- drop table  messages;
 
 
 
-          
+
 create table if not exists chats(
 		chats_id int (10) auto_increment primary key,
 		messages_id int (10) NOT NULL,
 		user_id int (10) NOT NULL,
+        	recipient_id int (10) NOT NULL,
         	count_users int (10) NOT NULL,
 		datetimes datetime NOT NULL default current_timestamp,
         	online_user char(3) check (online_user in ('Yes', 'No')),
 		FOREIGN KEY (user_id) REFERENCES users (user_id),
+        	FOREIGN KEY (recipient_id) REFERENCES messages (recipient_id),
 		FOREIGN KEY (messages_id) REFERENCES messages (messages_id) 
 );
--- drop table  chats;  
+drop table  chats;
 
-
-
+          
 create table reactions(
 		reaction_id int (10) auto_increment primary key,
 		user_id int (10) NOT NULL,
@@ -98,8 +102,7 @@ create table reactions(
 		FOREIGN KEY (user_id) REFERENCES users (user_id),
 		FOREIGN KEY (messages_id) REFERENCES messages (messages_id) 
 );
--- drop table  reactions; 
-
+-- drop table  reactions;  
 
 
 
