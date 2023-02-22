@@ -7,3 +7,4 @@
 - [HW6 - txt](https://viktarprof.github.io/TelRanSQL/HW6/решения.txt)
 - [HW7 - txt](https://viktarprof.github.io/TelRanSQL/HW7/решения.txt), [SQL](https://viktarprof.github.io/TelRanSQL/HW7/решения.sql)
 - [HW8 - txt](https://viktarprof.github.io/TelRanSQL/HW8/решения.txt), [SQL](https://viktarprof.github.io/TelRanSQL/HW8/решения.sql)
+- [HW9 - txt](https://viktarprof.github.io/TelRanSQL/HW9/решения.txt), [SQL](https://viktarprof.github.io/TelRanSQL/HW9/решения.sql)
