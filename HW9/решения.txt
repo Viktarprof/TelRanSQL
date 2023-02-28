@@ -1,6 +1,22 @@
 -- Описание занятия: В рамках БД 'chat' с помощью SQL напишите запрос, который вывеадет информацию о -- чатах  (КТО С КЕМ ОБЩАЕТСЯ), отсортированных по дате посл/сообщения
 -- =========================================== 
 
+-- Правильно решение с класса
+
+SELECT chats.chat_id, messages.text, messages.created_at, chats.topic
+FROM chats
+JOIN messages on chats.chat_id=messages.chat_id
+WHERE messages.created_at = (
+    SELECT MAX(created_at) FROM messages m
+    WHERE chats.chat_id=m.chat_id
+)
+ORDER BY messages.created_at DESC;
+
+
+
+
+
+-- ======== самостоятельное ===================
 select 
 	messages.message_id,
 	messages.created_at,
@@ -13,3 +29,16 @@ left join users users1 on messages.author_id = users1.user_id
 left join users users2 on messages.recipient_id = users2.user_id
 
 order by messages.message_id desc;
+
+
+
+
+
+-- ======== самостоятельное ===================
+select
+	users1.fullname as author, users2.fullname as recipient, messages.created_at
+from messages
+left join users users1 on messages.author_id = users1.user_id
+left join users users2 on messages.recipient_id = users2.user_id
+
+order by messages.created_at desc;

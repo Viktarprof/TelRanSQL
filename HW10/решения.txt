@@ -1,0 +1,111 @@
+Напишите запрос, который создаст транзакцию (БД БАНК) с необходимыми полями.
+
+(2) Приведите в качестве примера пять типовых бизнес-процессов, связанных с транзакциями, и соотвествующие им запросы в MongoDB.
+
+
+Конспект занятия
+https://western-appeal-39b.notion.site/GenTech-Feb-23-2023-28a4e33516774f78bcf440f907cbb0c5 
+
+
+
+
+
+
+
+=========================================
+Добавление денег на счет/карту (Вплатомат)
+db.transactions_add_money.insertOne(
+	{
+  		transactions_add_money_id: 1,
+		'bank account': '12 4256 6789 078979879',
+  		transaction_type: "add",
+  		amount: 100.00,
+  		'place': {
+			    country: 'Germany',
+			    city: 'Test_city'
+			 },
+  		created_at: new Date(Date now)
+	}
+);
+
+db.transactions_add_money.find(
+    {
+        'country': 'Germany'
+    },
+    {
+        'amount': {'$gte': 1000, '$lte': 1500}
+    } 
+)
+
+
+=========================================
+Списание/снятие денег со счета
+db.remove_of_money.insertOne(
+	{
+  		remove_of_money_id: 1,
+  		amount: 100.00,
+		'bank account': '12 4256 6789 078979879',
+		'place': {
+			    country: 'Germany',
+			    city: 'Test_city'
+			 },
+  		created_at: new Date(date now)
+	}
+);
+db.remove_of_money.find(
+    {
+     
+    },
+    {
+        'created_at': {'$eq': new Date(Date now)}
+    } 
+)
+
+=========================================
+Денежный перевод на сумму от кого/кому
+db.money_transfer.insertOne(
+	{
+  		money_transfer_id: 1,
+		'bank account sent': '12 4256 6789 078979879',
+  		amount: 100.00,
+		'bank account recipient': '90 6733 6789 078979879',
+  		'user_sent':{
+					'name': 'test_name',
+					'country': 'test_country'
+		},
+		'user_recipient':{
+					'name': 'test_name',
+					'country': 'test_country'
+		},
+  		created_at: new Date(Date now)
+	}
+);
+
+db.money_transfer.find(
+    {
+     
+    },
+    {
+        'user_recipient': {'$eq': 'country': 'test_country'}
+    } 
+)
+
+
+=========================================
+Транзакция выполнена или нет.
+db.check_transactions.insertOne(
+	{
+  		check_transactions_id: 1,
+  		check_done: true
+  		created_at: new Date(Date now)
+	}
+);
+
+db.check_transactions.find(
+    {
+     
+    },
+    {
+        'check_done': {'$eq': 'check_done': true}
+    } 
+)
