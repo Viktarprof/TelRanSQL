@@ -1,0 +1,102 @@
+//Не уверен
+//(1) вывести размеры EURO-транзакций из ЕВРОПЫ в долларах
+//
+db.transactions.aggregate([
+{
+    '$lookup': {
+        'from': 'users',
+        'localField': 'sender_id',
+        'foreignField': 'id',
+        'as': 'sender'
+    }
+},
+{"$match":{"sender.is_europe" : true}},
+    {
+        '$project': {
+            '_id': 0,
+            'id': 1,
+            'price_eur': '$amount',
+            'price_usd': {'$multiply': ['$amount', 1.10]}
+        }
+    }
+])
+
+
+
+
+//(2) вывести количество USD-транзакций из 'China'
+////
+//db.transactions.aggregate([
+// {
+//        '$lookup': {
+//            'from': 'users',
+//            'localField': 'sender_id',
+//            'foreignField': 'id',
+//            'as': 'sender'
+//        }
+//    },
+//    {
+//        '$match': { '$and':[
+//            {"sender.country" : "China"},
+//            {"currency" : "usd"}]
+//            }
+//    },
+//    {
+//        '$count': 'transactions_count'
+//    }
+//])
+    
+
+
+
+//(3) вывести три самых больших транзакции в 'usd'
+////
+//db.transactions.aggregate(
+//    {'$match': {"currency" : "usd"}},
+//    {'$sort':{'amount': -1 }},
+//    {'$limit': 3}
+//)
+
+
+
+
+//(4) вывести всех незаблокированных пользователей, у которых есть завершенные 
+//(is_completed) транзакции от 10 usd 
+////
+//db.transactions.aggregate([
+//{
+//        '$lookup': {
+//            'from': 'users',
+//            'localField': 'sender_id',
+//            'foreignField': 'id',
+//            'as': 'sender'
+//        }
+//    },
+//{'$match': {'$and': [
+//                    { "sender.is_blocked" : false },
+//                    { 'is_completed': true },
+//                    { "amount" : {'$gte': 10}},
+//                    { "currency" : "usd"}
+//                ]
+//            }   
+//}
+//])
+
+
+
+
+
+//(5) найти пользователей без транзакций
+//// показывает всех пользователей с одной и тойже транзакцией. почему?
+//db.users.aggregate([
+//{
+//        '$lookup': {
+//            'from': 'transactions',
+//            'localField': 'sender_id',
+//            'foreignField': 'id',
+//            'as': 'sender'
+//        }
+//    },
+//{'$match': { 'sender.is_completed': {'$exists': false }}   
+//}
+//])
