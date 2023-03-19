@@ -1,0 +1,103 @@
+//В рамках БД "bank" напишите след/запросы:
+
+//(1) Вывести количественное распределение товаров по поставщикам, а также общую сумму поставленных товаров
+// не знаю
+db.transactions.aggregate([
+    
+    {'$group': 
+        {'_id': '$sender_id',
+         'count_sent_goods': {'$count': {}},
+         'total_sent_goods': {'$sum': '$count_sent_goods'}}
+    }
+    
+])
+
+
+
+//
+//(2) Вывести общую и среднюю продолжительность звонков по каждой теме
+//
+db.calls.aggregate([
+
+{
+        '$group': {
+            '_id': '$topic',
+            'total_sec': {'$sum': '$duration_secs'},
+            'avg_sec': {'$avg': '$duration_secs'}
+        }
+    }
+]);
+
+
+
+//
+//(3) Вывести тему звонков, по которой общались меньше всего
+//
+
+db.calls.aggregate([
+    {
+        '$group': {
+            '_id': ['$topic'], 
+            'count_the': {'$count': {}}}
+    },
+    
+    {'$sort': {'count_the': 1}},
+    {'$limit': 1}
+])
+
+
+
+
+
+//
+//(4) Вывести одного пользователя, с которым общались на тему кредита дольше всего
+//поля: имя, продолжительность общения в часах
+//
+
+db.calls.aggregate([
+    {
+        '$match': {"topic" : "credit"}
+    },
+    {
+        '$group': {
+            '_id': '$user_id',
+            'total_direction_sec': {'$sum': '$duration_secs'}
+        }
+    },
+    {
+        '$sort': {'total_direction_sec': -1}
+    },
+    {
+        '$limit': 1
+    },
+    {
+        '$lookup': {
+            'from': 'users',
+            'localField': '_id',
+            'foreignField': 'id',
+            'as': 'user'
+        }
+    },
+    {
+        '$unwind': {
+            'path': '$sender',
+            'preserveNullAndEmptyArrays': true
+        }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'total_direction_h':{
+                '$divide': [
+                    {'$divide': ['$total_direction_sec', 60]}, 60]},
+            'fullname': '$user.fullname'
+        }
+    }
+])
+
+
+
+
+
+//Конспект занятия:
+//https://western-appeal-39b.notion.site/GenTech-Mar-16-2023-312e5a1ce8b6414f92ede9655dfda25b 

@@ -11,3 +11,4 @@
 - [HW10 - txt](https://viktarprof.github.io/TelRanSQL/HW10/решения.txt)
 - [HW11 - txt](https://viktarprof.github.io/TelRanSQL/HW11/решения.txt)
 - [HW12 - txt](https://viktarprof.github.io/TelRanSQL/HW12/решения.txt)
+- [HW13 - txt](https://viktarprof.github.io/TelRanSQL/HW13/решения.txt)
