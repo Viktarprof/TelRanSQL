@@ -1,29 +1,46 @@
 //В рамках БД "bank" напишите след/запросы:
 
 //(1) Вывести количественное распределение товаров по поставщикам, а также общую сумму поставленных товаров
-// не знаю
-db.transactions.aggregate([
-    
-    {'$group': 
-        {'_id': '$sender_id',
-         'count_sent_goods': {'$count': {}},
-         'total_sent_goods': {'$sum': '$count_sent_goods'}}
-    }
-    
-])
 
+db.goods.aggregate([
+	{
+		$group: {
+			_id: '$supplier_id',
+			total_goods_position: { $count: {} },
+			total_goods_sum: {
+				$sum: {
+					$multiply: ['$price', '$quantity'],
+				},
+			},
+		},
+	},
+	{
+		$project: {
+			_id: 0,
+			total_goods_position: 1,
+			total_goods_sum: 1,
+			supplier: '$_id',
+		},
+	}
+]);
+```
 
 
 //
 //(2) Вывести общую и среднюю продолжительность звонков по каждой теме
 //
 db.calls.aggregate([
-
-{
-        '$group': {
-            '_id': '$topic',
-            'total_sec': {'$sum': '$duration_secs'},
-            'avg_sec': {'$avg': '$duration_secs'}
+    {
+        $unwind: {
+            path: '$topic',
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    {
+        $group: {
+            _id: '$topic',
+            total_duration_secs: { $sum: '$duration_secs' },
+            avg_duration_secs: { $avg: '$duration_secs' }
         }
     }
 ]);
@@ -33,17 +50,33 @@ db.calls.aggregate([
 //
 //(3) Вывести тему звонков, по которой общались меньше всего
 //
-
 db.calls.aggregate([
-    {
-        '$group': {
-            '_id': ['$topic'], 
-            'count_the': {'$count': {}}}
-    },
-    
-    {'$sort': {'count_the': 1}},
-    {'$limit': 1}
-])
+	{
+		$unwind: {
+			path: '$topic',
+			preserveNullAndEmptyArrays: true
+		}
+	},
+	{
+		$group: {
+			_id: '$topic',
+			total_duration_secs: { $sum: '$duration_secs' }
+		}
+	},
+	{
+		$sort: { total_duration_secs: 1 }
+	},
+	{
+		$limit: 1
+	},
+	{
+		$project: {
+			_id: 0,
+			topic: '$_id',
+			total_duration_secs: 1
+		}
+	}
+]);
 
 
 
@@ -56,16 +89,16 @@ db.calls.aggregate([
 
 db.calls.aggregate([
     {
-        '$match': {"topic" : "credit"}
+        '$match': { "topic": "credit" }
     },
     {
         '$group': {
             '_id': '$user_id',
-            'total_direction_sec': {'$sum': '$duration_secs'}
+            'total_direction_secs': { '$sum': '$duration_secs' }
         }
     },
     {
-        '$sort': {'total_direction_sec': -1}
+        '$sort': { 'total_direction_secs': -1 }
     },
     {
         '$limit': 1
@@ -80,16 +113,14 @@ db.calls.aggregate([
     },
     {
         '$unwind': {
-            'path': '$sender',
+            'path': '$user',
             'preserveNullAndEmptyArrays': true
         }
     },
     {
         '$project': {
             '_id': 0,
-            'total_direction_h':{
-                '$divide': [
-                    {'$divide': ['$total_direction_sec', 60]}, 60]},
+            'total_direction_h': { '$divide': ['$total_direction_secs', 3600] },
             'fullname': '$user.fullname'
         }
     }
