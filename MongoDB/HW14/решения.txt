@@ -1,18 +1,21 @@
 //В рамках БД 'platform_fe' напишите следующие запросы:
 //(1) Вывести ТОП-1 стран по общей сумме пожертвований (страна + общая сумма).
-// не то. в выводе всех стран показало 4-е страны. странно
+
 db.donations.aggregate([
     {'$lookup': {
             from: 'users',
             localField: "donator_id",
             foreignField: 'id',
-            as: 'country'}},
-   {'$unwind': '$country'},
-   { '$group': { _id: "$country.country", total_donations: { $sum: "$amount" } } },
+            as: 'donator'}},
+   {'$unwind': '$donator'},
+   { '$group': { _id: "$donator.country", total_donations: { $sum: "$amount" } } },
    
    { '$sort': { total_donations: -1 } },
    { '$limit': 1 }
 ])
+
+
+
 
 //(2) Вывести страны со средней реакцией пользователей 
 //(напр., пользователи из США имеют сред.реакцию - 4).
@@ -25,124 +28,152 @@ db.reactions.aggregate([
             foreignField: 'id',
             as: 'country'}},
     {'$unwind': '$country'},
-   {'$group': { _id: "$country.country", avg_reactions: { '$avg': "$value" } } },
-   {
-    $project: {
+    {'$group': { _id: "$country.country", avg_reactions: { '$avg': "$value" } } },
+   
+    {'$sort': {'avg_reactions': -1}},
+    {$project: {
       _id: 0,
       country: "$_id",
-      avg_reactions: 1
-    }
-  }
+      avg_reactions: 1 }}
 ])
 
 (3) Вывести названия стримов без пожертвований или без реакций.
+
 db.streams.aggregate([
-    {'$lookup': {
-            'from': 'donations',
-            'localField': 'user_id',
-            'foreignField': 'donator_id',
-            'as': 'author_donat'}},
-//    {'$unwind': '$author_donat'},
-    {'$match': { 'amount': { '$ne': 0 } } },
-    {'$group': { _id: "$author_donat.amount" } },
-    {'$lookup': {
-            'from': 'reactions',
-            'localField': 'donator_id',
-            'foreignField': 'user_id',
-            'as': 'author_reactions'}},
-//    {'$unwind': '$author_reactions'},
-    {'$match': { 'value': { '$ne': 0 } } },
-    {'$group': { _id: "$author_reactions.value" } },
-    
-     {'$project': {
-            'stream_title': '$author_donat.fullname',
-            '_id': 1 }}
+    {
+        $lookup: {
+            from: 'donations',
+            localField: 'id',
+            foreignField: 'stream_id',
+            as: 'donations'
+        }
+    },
+    {
+        $lookup: {
+            from: 'reactions',
+            localField: 'id',
+            foreignField: 'stream_id',
+            as: 'reactions'
+        }
+    },
+    {
+        $match: {
+            $or: [
+                { 'reactions': {'$size': 0} },
+                { 'donations': {'$size': 0} }
+            ]
+        }
+    }
 ])
 
 
 
 (4) Вывести максимальный размер пожертвования для каждого стримера.
-// не решил
-//1.=============
 db.donations.aggregate([
     {
-        '$group': {
-            '_id': '$donator_id',
-            'maxAmountDonat': { $max: '$amount' }
+        '$lookup': {
+            'from': 'streams',
+            'localField': 'stream_id',
+            'foreignField': 'id',
+            'as': 'streams'
         }
     },
-
+    { '$unwind': '$streams' },
     {
-        $lookup: {
-            from: 'users',
-            localField: "_id",
-            foreignField: 'id',
-            as: 'user'
+        '$group': {
+            '_id': '$streams.user_id',
+            'max_value': { '$max': '$amount' }
         }
     },
-    { '$unwind': '$user' }, 
-
+    {
+        '$lookup': {
+            'from': 'users',
+            'localField': '_id',
+            'foreignField': 'id',
+            'as': 'users'
+        }
+    },
+    { '$unwind': '$users' },
     {
         '$project': {
-            'user_name': '$user.fullname',
-            'maxAmountDonat': 1,
-            '_id': 0
+            '_id': 0,
+            'stream_fullname': '$users.fullname',
+            'max_value': 1
         }
     }
 ])
-//2.=============
-db.donations.aggregate([
-    {$lookup: {
-      from: 'users',
-      localField: 'donator_id',
-      foreignField: 'id',
-      as: 'user' }},
-      
-    { '$unwind': '$user' }, 
-    
-    {'$group': {
-      '_id': '$id',
-      'maxAmountDonat': { '$max': '$amount' }}},
-      
-      
-   {'$project': {
-      'user_name': '$user.fullname',
-      'maxAmountDonat': 1,
-      '_id': 0}}
-])
 
+// C ОПТИМИЗАЦИЕЙ
+db.donations.aggregate([
+    {
+        '$group': {
+            '_id': '$stream_id',
+            'max': { '$max': '$amount' }
+        }
+    },
+    {
+        '$lookup': {
+            'from': 'streams',
+            'localField': '_id',
+            'foreignField': 'id',
+            'as': 'streams'
+        }
+    },
+    { '$unwind': '$streams' },
+    {
+        '$group': {
+            '_id': '$streams.user_id',
+            'max_value': { '$max': '$max' }
+        }
+    },
+    {
+        '$lookup': {
+            'from': 'users',
+            'localField': '_id',
+            'foreignField': 'id',
+            'as': 'users'
+        }
+    },
+    { '$unwind': '$users' },
+    {
+        '$sort': { 'max_value': -1 }
+    },
+    {
+        '$project': {
+            '_id': 0,
+            'stream_fullname': '$users.fullname',
+            'max_value': 1
+        }
+    }
+])
 
 
 (5) Вывести ТОП-3 пожертвований из Германии (имя донатора и размер пожертвования).
 db.donations.aggregate([
-  {$lookup: {
-      from: 'users',
-      localField: 'donator_id',
-      foreignField: 'id',
-      as: 'user'}},
-  {$match: {
-      'user.country': 'Germany'}},
-  {'$group': {
-      '_id': '$donator_id',
-    'maxAmountDonat': { $sum: '$amount' }} }, // посчитал только сумму.
-
-    {'$limit': 3},
-    
-  {
-    '$lookup': {
-      from: 'users',
-      localField: '_id',
-      foreignField: 'id',
-      as: 'user'
+    {
+        '$lookup': {
+            'from': 'users',
+            'localField': 'donator_id',
+            'foreignField': 'id',
+            'as': 'donator'
+        }
+    },
+    { '$unwind': '$donator' },
+    {
+        '$match': {
+            'donator.country': 'Germany'
+        }
+    },
+    { '$sort': { 'amount': -1 } },
+    { '$limit': 3 },
+    {
+        '$project': {
+            'donator_fullname': '$donator.fullname',
+            'amount': 1,
+            '_id': 0
+        }
     }
-  },
-  {'$unwind': '$user'},
-
-  {'$project': {
-      'user_name': '$user.fullname',
-      'maxAmountDonat': 1,
-      '_id': 0}}
-])
+]);
 
 
 Конспект занятия
