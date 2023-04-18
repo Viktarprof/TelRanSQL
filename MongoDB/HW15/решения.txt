@@ -10,6 +10,15 @@ Users {
 }
 
 // ==============================
+Groups{
+	group_id;
+	title;
+	is_active;
+	users_id;
+	course_id;
+}
+
+// ==============================
 Courses{
 	course_id;
 	title;
@@ -47,9 +56,11 @@ Homeworks{
 }
 // ==============================
 
+  ________
+ /_Связи_/
 
-Связи
-
+Users.users_id 	  (1:1) Groups.group_id
+Groups.group_id   (M:1) Courses.course_id
 lessons.lesson_id (M:1) Video_less.lesson_id
 lessons.lesson_id (M:M) Homework_id.lesson_id
 lessons.course_id (1:1) Courses.course_id
