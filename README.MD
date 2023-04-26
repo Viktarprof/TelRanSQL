@@ -14,3 +14,5 @@
 - [HW13 - txt](https://viktarprof.github.io/TelRanSQL/MongoDB/HW13/решения.txt)
 - [HW14 - txt](https://viktarprof.github.io/TelRanSQL/MongoDB/HW14/решения.txt)
 - [HW15 - txt](https://viktarprof.github.io/TelRanSQL/MongoDB/HW15/решения.txt)
+- [HW16 - txt](https://viktarprof.github.io/TelRanSQL/MongoDB/HW16/решения.txt)
+- [HW17 - txt](https://viktarprof.github.io/TelRanSQL/MongoDB/HW17/решения.txt)
