@@ -1,0 +1,47 @@
+Описать схему БД в части хранения полномочий пользователей (типовые и выданные).
+
+Конспект занятия
+https://western-appeal-39b.notion.site/GenTech-Apr-27-2023-9ce422b7cefd44bda2c65ec9609c26fc 
+
+
+
+
+table Users{
+	user_id int [pk, increment]
+	username varchar
+	password varchar
+	email varchar
+}
+
+
+table Roles{
+	role_id int [pk, increment]
+	role_name varchar
+}
+
+
+table DefaultPermissions{
+	permission_id int [pk, increment]
+	permission_name varchar
+	description varchar
+}
+
+
+table RoleDefaultPermissions{
+	role_id int
+	permission_id int
+}
+
+
+table UserPermissions{
+	user_id int
+	permission_id int
+	grant_date timestamp
+}
+
+
+
+Ref: Users.user_id < UserPermissions.user_id
+Ref: Roles.role_id < RoleDefaultPermissions.role_id
+Ref: DefaultPermissions.permission_id < RoleDefaultPermissions. permission_id
+Ref: RoleDefaultPermissions.permission_id < UserPermissions.permission_id

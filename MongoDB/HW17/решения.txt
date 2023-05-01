@@ -4,6 +4,8 @@
 https://western-appeal-39b.notion.site/GenTech-Apr-20-2023-0928e69e43f84ac6a72c079ca32b422d 
 
 
+ДОБАВИЛЬ ТАБЛИЦУ ТРЭКИ ПЛЕЙЛИСТА
+
 
 Table users {
    	  user_id integer [primary key]
@@ -11,7 +13,7 @@ Table users {
     	surname string
 	    email String 
 	    password_hash String 
-	    date_of_birth Date 
+	    date_of_birth Datetime 
 	    registration_date Date 
 }
 
